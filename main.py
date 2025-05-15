@@ -1,88 +1,94 @@
+from typing import Any, Generator
+
+
 class DoubleLinkedList:
     class Node:
-        def __init__(self, value):
+        def __init__(self, value: Any):
             self.value = value
             self.prev = None
             self.next = None
 
     def __init__(self):
-        self.head = None
-        self.tail = None
-        self.length = 0
+        self._head = None
+        self._tail = None
+        self._length = 0
 
-    def append(self, value):
+    def append(self, value: Any):
         new_node = self.Node(value)
-        if self.length == 0:
-            self.head = new_node
-            self.tail = new_node
+        if self._length == 0:
+            self._head = new_node
+            self._tail = new_node
         else:
-            new_node.prev = self.tail
-            self.tail.next = new_node
-            self.tail = new_node
-        self.length += 1
+            new_node.prev = self._tail
+            self._tail.next = new_node
+            self._tail = new_node
+        self._length += 1
 
-    def prepend(self, value):
+    def prepend(self, value: Any):
         new_node = self.Node(value)
-        if self.length == 0:
-            self.head = new_node
-            self.tail = new_node
+        if self._length == 0:
+            self._head = new_node
+            self._tail = new_node
         else:
-            new_node.next = self.head
-            self.head.prev = new_node
-            self.head = new_node
-        self.length += 1
+            new_node.next = self._head
+            self._head.prev = new_node
+            self._head = new_node
+        self._length += 1
 
-    def insert(self, index, value):
+    def insert(self, index: int, value: Any):
         if index <= 0:
             self.prepend(value)
-        elif self.length > 0 and index < self.length:
+        elif self._length > 0 and index < self._length:
             new_node = self.Node(value)
-            prev_el = self.head
+            prev_el = self._head
             for _ in range(index - 1):
                 prev_el = prev_el.next
             new_node.next = prev_el.next
             prev_el.next.prev = new_node
             prev_el.next = new_node
             new_node.prev = prev_el
-            self.length += 1
+            self._length += 1
         else:
             self.append(value)
 
-    def delete(self, value):
-        if not self.length:
+    def delete(self, value: Any):
+        if not self._length:
             return None
-        elif self.head.value == value:
-            self.head.next.prev = None
-            self.head = self.head.next
+        elif self._head.value == value:
+            if self._length == 1:
+                self._head = None
+            else:
+                self._head.next.prev = None
+                self._head = self._head.next
         else:
-            current = self.head
+            current = self._head
             while current and value != current.value:
                 current = current.next
             if not current:
                 return None
-            elif current is self.tail:
-                self.tail.prev.next = None
-                self.tail = self.tail.prev
+            elif current is self._tail:
+                self._tail.prev.next = None
+                self._tail = self._tail.prev
             else:
                 current.prev.next = current.next
                 current.next.prev = current.prev
-        self.length -= 1
+        self._length -= 1
 
-    def find(self, value):
+    def find(self, value: Any) -> int:
         index = 0
-        current = self.head
-        while index < self.length:
+        current = self._head
+        while index < self._length:
             if value == current.value:
                 return index
             current = current.next
             index += 1
         return -1
 
-    def __len__(self):
-        return self.length
+    def __len__(self) -> int:
+        return self._length
 
-    def __iter__(self):
-        current = self.head
+    def __iter__(self) -> Generator[Any, None, None]:
+        current = self._head
         while current:
             yield current.value
             current = current.next
@@ -91,6 +97,7 @@ class DoubleLinkedList:
 if __name__ == '__main__':
     a = DoubleLinkedList()
     b = DoubleLinkedList()
+    d = DoubleLinkedList()
 #  Добавление в начало:
     a.append(4)
     a.append(6)
@@ -114,10 +121,15 @@ if __name__ == '__main__':
     a.delete(51)
     a.delete(50)
     print(list(a), 'метод delete()')
-
 #  Возвращение индекса элемента по значению:
     print(a.find(6), 'метод find()')
     print(a.find(-10), 'метод find()')
     print(b.find(1), 'метод find() пустой список')
 #  Длина списка:
     print(f'Количестов элементов {len(a)}')
+#  Удаление из списка содержащего 1 элемент:
+    d.append(1)
+    d.delete(15)
+    print(list(d))
+    d.delete(1)
+    print(list(d), 'delete() для списка с 1 элементом')
